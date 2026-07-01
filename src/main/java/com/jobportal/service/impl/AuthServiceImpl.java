@@ -57,7 +57,12 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
         log.info("New user registered: {} with role {}", user.getEmail(), user.getRole());
 
-        emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
+        // Email is best-effort — never let SMTP failure block registration
+        try {
+            emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
+        } catch (Exception e) {
+            log.warn("Welcome email could not be sent to {}: {}", user.getEmail(), e.getMessage());
+        }
 
         String token = jwtTokenProvider.generateToken(user.getEmail());
 
