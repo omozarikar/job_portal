@@ -1,0 +1,9 @@
+target/
+*.class
+*.jar
+!**/src/main/**/target/
+.mvn/
+uploads/
+*.iml
+.idea/
+.env

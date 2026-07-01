@@ -1,0 +1,34 @@
+# Render Blueprint — defines both the web service and the database together.
+# Push this file to your repo root, then in Render dashboard choose
+# "New + > Blueprint" and point it at this repo. It provisions everything
+# in one step instead of clicking through the UI manually.
+
+databases:
+  - name: jobportal-db
+    plan: free
+    databaseName: jobportal
+    user: jobportal_user
+
+services:
+  - type: web
+    name: jobportal-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: jobportal-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: jobportal-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: jobportal-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
